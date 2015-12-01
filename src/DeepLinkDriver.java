@@ -1,26 +1,16 @@
-import java.util.Scanner;
-
 import components.*;
 import components.intents.*;
 
 
 public class DeepLinkDriver {
-	private UserData userData;
-	private ManifestInject manifestInject;
-	private DeepLinkGenerate deepLinkGenerate;
-	private GenerateIntent generateIntent;
-	private ProcessIntent processIntent;
+	private ProcessUserData processUserData;
 	
 	public DeepLinkDriver() {
-		userData = new UserData();
-		manifestInject = new ManifestInject();
-		deepLinkGenerate = new DeepLinkGenerate();
-		generateIntent = new GenerateIntent();
-		processIntent = new ProcessIntent();
+		processUserData = new ProcessUserData();
 	}
 	
 	public void launch() {
-		System.out.println("-----------------------------------------------");
+		System.out.println("------------------------------------------------------------------------------------");
 		System.out.println("Welcome to DeepLink - a developer tool for Android");
 		newLine();
 		System.out.println("This tool will inject your Android application with deep"
@@ -32,15 +22,15 @@ public class DeepLinkDriver {
 		
 		System.out.println("Further, your application "
 				+ "will be able to support these links by processing " + "\n" + "them from the web "
-				+ "and opening the corresponding activity and data set.");
+				+ "and opening the corresponding activity with appropriate configurations.");
 		
 		newLine();
-		System.out.println("-----------------------------------------------");
+		System.out.println("------------------------------------------------------------------------------------");
 		getUserData();
 	}
 	
 	private void getUserData() {
-		userData.processRootDirectory();
+		processUserData.processRootDirectory();
 		
 	}
 	

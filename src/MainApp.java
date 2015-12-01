@@ -5,5 +5,4 @@ public class MainApp {
 		DeepLinkDriver driver = new DeepLinkDriver();
 		driver.launch();
 	}
-
 }
