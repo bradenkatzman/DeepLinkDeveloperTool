@@ -10,7 +10,6 @@ public class DeepLinkDriver {
 	private DeepLinkGenerate deepLinkGenerate;
 	private GenerateIntent generateIntent;
 	private ProcessIntent processIntent;
-	private String rootDirectory;
 	
 	public DeepLinkDriver() {
 		userData = new UserData();
@@ -37,11 +36,12 @@ public class DeepLinkDriver {
 		
 		newLine();
 		System.out.println("-----------------------------------------------");
+		getUserData();
+	}
+	
+	private void getUserData() {
+		userData.processRootDirectory();
 		
-		System.out.println("Please enter the path to the root directory of your Android application");
-		Scanner scanner = new Scanner(System.in);
-		this.rootDirectory = scanner.nextLine();
-		System.out.println(rootDirectory);
 	}
 	
 	public void newLine() {
