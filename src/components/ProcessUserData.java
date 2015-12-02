@@ -8,6 +8,7 @@ public class ProcessUserData {
 	ManifestInject manifestInject;
 	private String rootDirectoryPath;
 	private File rootDirectory;
+	File manifest;
 	boolean manifestFound;
 	
 	public ProcessUserData() {
@@ -15,9 +16,10 @@ public class ProcessUserData {
 		manifestFound = false;
 	}
 	
-	public void processRootDirectory() {
+	public void processRootDirectory() throws FileNotFoundException {
 		scanPath();
-		scanRootDirectory();
+		checkRoot();
+		processScanResults();
 	}
 	
 	public void scanPath() {
@@ -27,7 +29,7 @@ public class ProcessUserData {
 		scanner.close();
 	}
 	
-	public void scanRootDirectory() {
+	public void checkRoot() {
 		try {
 			this.rootDirectoryPath = BriskNoteDir;
 			
@@ -39,13 +41,8 @@ public class ProcessUserData {
 				System.out.println("The path provided does not point to a directory");
 				Scanner scanner = new Scanner(rootDirectory);
 				scanner.close();
-			}
-				
-			if (!manifestFound) {
-					manifestInject.manifestNotFound();
-			} 
-			
-			
+				System.exit(0);
+			}			
 		} catch (FileNotFoundException e) {
 			//e.printStackTrace();
 			System.out.println("The file was not found");
@@ -53,7 +50,7 @@ public class ProcessUserData {
 		}
 	}
 	
-	public void scanDir(File dir) throws FileNotFoundException {
+	public void scanDir(File dir) {
 		File[] listOfFiles = dir.listFiles();
 		for (int i = 0; i < listOfFiles.length; i++) {
 			File currFile = listOfFiles[i];
@@ -64,9 +61,17 @@ public class ProcessUserData {
 			else if (currFile.isFile() && 
 					currFile.getName().equals("AndroidManifest.xml")) {
 				manifestFound = true;
-				manifestInject.processAndroidManifestXML(currFile);
+				manifest = currFile;
 				return;
 			}
+		}
+	}
+	
+	public void processScanResults() throws FileNotFoundException {
+		if (manifestFound) {
+			manifestInject.processAndroidManifestXML(manifest);
+		} else {
+			manifestInject.manifestNotFound();
 		}
 	}
 	
