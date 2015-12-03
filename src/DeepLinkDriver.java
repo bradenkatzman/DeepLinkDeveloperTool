@@ -17,7 +17,7 @@ public class DeepLinkDriver {
 		newLine();
 		System.out.println("This tool will inject your Android application with deep"
 				+ " link support");
-		System.out.println("After execution, your application will be able to "
+		System.out.println("After execution, your application will "
 				+ "generate links that will open up any state of your app");
 		System.out.println("    i.e. any activity "
 				+ " with any data set you choose to support.");

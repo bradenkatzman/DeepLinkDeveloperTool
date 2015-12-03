@@ -57,8 +57,7 @@ public class ProcessUserData {
 			
 			if (currFile.isDirectory()) {
 				scanDir(currFile);
-			}
-			else if (currFile.isFile() && 
+			} else if (currFile.isFile() && 
 					currFile.getName().equals("AndroidManifest.xml")) {
 				manifestFound = true;
 				manifest = currFile;
@@ -74,8 +73,7 @@ public class ProcessUserData {
 			manifestInject.manifestNotFound();
 		}
 	}
-	
-	
+
 	public final static String duckduckgoDir = "/Users/stormfootball4life/Desktop/CS/Columbia/SoftwareSystemsLab/android/";
 	public final static String BriskNoteDir = "/Users/stormfootball4life/AndroidStudioProjects/BriskNote/";
 }
