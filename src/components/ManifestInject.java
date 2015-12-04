@@ -8,10 +8,17 @@ public class ManifestInject {
 	private String actionType;
 	private boolean browsableFilterFound;
 	private File AndroidManifest;
+	private String dataTag;
+	private String dataTagComment;
+	private String intentFilter;
+	
+	Scanner scannerSTDIN;
 	
 	public ManifestInject() {
 		browsableFilterFound = false;
 		actionType = null;
+		
+		scannerSTDIN = new Scanner(System.in);
 	}
 	
 	public void processAndroidManifestXML(File AndroidManifest) throws FileNotFoundException {
@@ -111,7 +118,7 @@ public class ManifestInject {
 					line = manifestScan.nextLine();
 				}
 				
-				System.out.println(line);
+				//when reached here - at final activity line --> insert filter after
 			}
 		}
 		
@@ -123,6 +130,7 @@ public class ManifestInject {
 	 * Builds the type of link the app should accept 
 	 */
 	private void buildFilter() {
+		
 		newLine();
 		System.out.println("I need some information to generate the type of links that will open your app:"
 				+ "\n" + "    - the NAME of your app"
@@ -130,7 +138,34 @@ public class ManifestInject {
 				+ "\n"
 				+ "\n" + "A full link will begin like this:"
 				+ "\n" + "    NAME-app://host..."
+				+ "\n" + "e.g. -->  notepad-app://notepad/note.txt"
 				+ "\n" + "The rest of the link will be processed and handled per activity.");
+		newLine();
+		System.out.println("Please enter the NAME of your app: ");
+		String NAME = scannerSTDIN.nextLine();
+		
+		System.out.println("Would you like to use the NAME as the host? (y/n)");
+		String HOST = NAME;
+		if (scannerSTDIN.nextLine().toLowerCase() == "n") {
+			System.out.println("Please enter the HOST of your app: ");
+			HOST = scannerSTDIN.nextLine();
+		}
+		
+		//build the comment to be inserted above data tag
+		dataTagComment = "<!-- Accepts URIs that begin with \"" 
+				+ NAME + "-app://" + HOST + "\" -->";
+		
+		//build the data tag
+		dataTag = "<data android:scheme=\"" + NAME + "-app"
+							+ "\" android:host=\"" + HOST + "\" />"; 
+		
+		//build the filter
+		intentFilter = browsableFilterStart 
+				+ "\n" + dataTagComment
+				+ "\n" + dataTag
+				+ "\n" + browsableFilterClose;
+		
+		System.out.println(intentFilter);
 	}
 	
 	public void manifestNotFound() {
@@ -149,5 +184,5 @@ public class ManifestInject {
 														"\n" + "<category android:name=\"android.intent.category.BROWSABLE\" />";
 	 
 	
-	private final static String browsableFilterClose = "\n" + "</intent-filter>";
+	private final static String browsableFilterClose = "</intent-filter>";
 }

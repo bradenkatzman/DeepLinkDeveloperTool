@@ -11,9 +11,13 @@ public class ProcessUserData {
 	File manifest;
 	boolean manifestFound;
 	
+	Scanner scannerSTDIN;
+	
 	public ProcessUserData() {
 		manifestInject = new ManifestInject();
 		manifestFound = false;
+		
+		scannerSTDIN = new Scanner(System.in);
 	}
 	
 	public void processRootDirectory() throws FileNotFoundException {
@@ -24,9 +28,8 @@ public class ProcessUserData {
 	
 	public void scanPath() {
 		System.out.println("Please enter the complete path to the root directory of your Android application");
-		Scanner scanner = new Scanner(System.in);
-		this.rootDirectoryPath = scanner.nextLine();
-		scanner.close();
+		
+		this.rootDirectoryPath = scannerSTDIN.nextLine();
 	}
 	
 	public void checkRoot() {
