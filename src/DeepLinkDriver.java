@@ -1,7 +1,7 @@
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import components.*;
-import components.intents.*;
 
 
 public class DeepLinkDriver {
@@ -11,7 +11,7 @@ public class DeepLinkDriver {
 		processUserData = new ProcessUserData();
 	}
 	
-	public void launch() throws FileNotFoundException {
+	public void launch() throws FileNotFoundException, IOException {
 		System.out.println("------------------------------------------------------------------------------------");
 		System.out.println("Welcome to DeepLink - a developer tool for Android");
 		newLine();
@@ -31,7 +31,7 @@ public class DeepLinkDriver {
 		getUserData();
 	}
 	
-	private void getUserData() throws FileNotFoundException {
+	private void getUserData() throws FileNotFoundException, IOException {
 		processUserData.processRootDirectory();
 	}
 	

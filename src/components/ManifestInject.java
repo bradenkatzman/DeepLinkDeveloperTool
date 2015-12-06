@@ -2,6 +2,8 @@ package components;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class ManifestInject {
@@ -21,7 +23,7 @@ public class ManifestInject {
 		scannerSTDIN = new Scanner(System.in);
 	}
 	
-	public void processAndroidManifestXML(File AndroidManifest) throws FileNotFoundException {
+	public void processAndroidManifestXML(File AndroidManifest) throws FileNotFoundException, IOException {
 		newLine();
 		System.out.println("processing AndroidManifest.xml ...................");
 		
@@ -87,7 +89,7 @@ public class ManifestInject {
 		manifestScan.close();
 	}
 	
-	private void processScanResults() throws FileNotFoundException {
+	private void processScanResults() throws FileNotFoundException, IOException {
 		if (browsableFilterFound) {
 			newLine();
 			System.out.println("Action type for browsable filter: " + actionType);
@@ -105,7 +107,7 @@ public class ManifestInject {
 		}
 	}
 	
-	private void injectFilter() throws FileNotFoundException {
+	private void injectFilter() throws FileNotFoundException, IOException {
 		buildFilter(); 
 		newLine();
 		System.out.println("injecting browsable filter ...............");
@@ -119,6 +121,10 @@ public class ManifestInject {
 				}
 				
 				//when reached here - at final activity line --> insert filter after
+				
+				//reference for adding to existing file:
+				// http://stackoverflow.com/questions/289965/inserting-text-into-an-existing-file-via-java
+				
 			}
 		}
 		
@@ -150,6 +156,8 @@ public class ManifestInject {
 			System.out.println("Please enter the HOST of your app: ");
 			HOST = scannerSTDIN.nextLine();
 		}
+		
+		//FINAL CHECK HERE --> PRINT NAME AND HOST AND CONFIRM THAT THEY ARE CORRECT
 		
 		//build the comment to be inserted above data tag
 		dataTagComment = "<!-- Accepts URIs that begin with \"" 

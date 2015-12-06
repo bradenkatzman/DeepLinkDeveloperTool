@@ -2,6 +2,7 @@ package components;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class ProcessUserData {
@@ -20,7 +21,7 @@ public class ProcessUserData {
 		scannerSTDIN = new Scanner(System.in);
 	}
 	
-	public void processRootDirectory() throws FileNotFoundException {
+	public void processRootDirectory() throws FileNotFoundException, IOException {
 		scanPath();
 		checkRoot();
 		processScanResults();
@@ -69,7 +70,7 @@ public class ProcessUserData {
 		}
 	}
 	
-	public void processScanResults() throws FileNotFoundException {
+	public void processScanResults() throws FileNotFoundException, IOException {
 		if (manifestFound) {
 			manifestInject.processAndroidManifestXML(manifest);
 		} else {
