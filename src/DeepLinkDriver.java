@@ -1,14 +1,17 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Scanner;
 
 import components.*;
 
 
 public class DeepLinkDriver {
 	private ProcessUserData processUserData;
+	private Scanner scannerSTDIN;
 	
 	public DeepLinkDriver() {
-		processUserData = new ProcessUserData();
+		this.scannerSTDIN = new Scanner(System.in);
+		processUserData = new ProcessUserData(this.scannerSTDIN);
 	}
 	
 	public void launch() throws FileNotFoundException, IOException {

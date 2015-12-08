@@ -4,23 +4,30 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ManifestInject {
 	private String actionType;
 	private boolean browsableFilterFound;
 	private File AndroidManifest;
+	private File AndroidManifestUpdated;
 	private String dataTag;
 	private String dataTagComment;
 	private String intentFilter;
+	private ArrayList<String> fileAsArrayList;
+	private String activityName;
+	private String NAME;
+	private String HOST;
 	
 	Scanner scannerSTDIN;
 	
-	public ManifestInject() {
+	public ManifestInject(Scanner scannerSTDIN) {
 		browsableFilterFound = false;
 		actionType = null;
+		fileAsArrayList = new ArrayList<String>();
 		
-		scannerSTDIN = new Scanner(System.in);
+		this.scannerSTDIN = scannerSTDIN;
 	}
 	
 	public void processAndroidManifestXML(File AndroidManifest) throws FileNotFoundException, IOException {
@@ -113,23 +120,86 @@ public class ManifestInject {
 		System.out.println("injecting browsable filter ...............");
 		
 		Scanner manifestScan = new Scanner(AndroidManifest);
+		
+		boolean activityFound = false;
 		while (manifestScan.hasNextLine()) {
 			String line = manifestScan.nextLine();
-			if (line.contains("<activity")) {
+			
+			//add the line to the ArrayList
+			fileAsArrayList.add(line);
+			if (!activityFound && line.contains("<activity")) {
 				while (!line.contains(">")) {
 					line = manifestScan.nextLine();
+					
+					//check for the line which contains the name of the activity
+					if (line.contains("android:name")) {
+						//extract the activity name skipping the quotes and prefix '.'
+						String activity = line.substring(line.indexOf("\"")+2,
+								line.lastIndexOf("\""));
+						
+						if (activity.toLowerCase().equals(activityName.toLowerCase())) {
+							activityFound = true;
+						}
+					}
+					
+					//add each line of the activity tag
+					fileAsArrayList.add(line);
 				}
 				
-				//when reached here - at final activity line --> insert filter after
+				//add the final activity line
+				fileAsArrayList.add(line);
 				
-				//reference for adding to existing file:
-				// http://stackoverflow.com/questions/289965/inserting-text-into-an-existing-file-via-java
-				
+				if (activityFound) {
+					//add the browsable intent filter
+					fileAsArrayList.add(intentFilter);
+				}	
 			}
 		}
 		
+		//exit program if activity tag not found in the manifest file
+		if (!activityFound) {
+			System.out.println("The activity which you supplied does not exist in the manifest."
+					+ "\n" + "This implies that you either haven't created the java file: "
+					+ "\n" + activityName + ".java"
+					+ "\n" + "OR, you haven't added the correspoding activity tag to the manifest file.");
+			
+			scannerSTDIN.close();
+			System.exit(0);
+		}
+		
 		manifestScan.close();
+		
+		arrayListToFile();
 	}
+	
+	private void arrayListToFile() throws IOException {
+		System.out.println("building updated manifest ...............");
+		AndroidManifestUpdated = new File("AndroidManifest.xml");
+		
+		FileWriter fw = new FileWriter(AndroidManifestUpdated);
+		for (String line : fileAsArrayList) {
+			System.out.println(line);
+			fw.write(line);
+		}
+		
+		fw.flush();
+		fw.close();
+		
+		replaceManifest();
+	}
+	
+	private void replaceManifest() {
+		
+	}
+	
+	/*
+	 * DEBUGGING TOOL
+	 */
+//	private void printFileArrayList() {
+//		for (String line : fileAsArrayList) {
+//			System.out.println(line);
+//		}
+// 	}
 	
 	/*
 	 * Constructs the filter to be injected into manifest
@@ -141,23 +211,40 @@ public class ManifestInject {
 		System.out.println("I need some information to generate the type of links that will open your app:"
 				+ "\n" + "    - the NAME of your app"
 				+ "\n" + "    - the HOST of your app (can be the same as the name)"
+				+ "\n" + "    - the name of the ACTIVITY which you would like to generate and support deep linking"
 				+ "\n"
 				+ "\n" + "A full link will begin like this:"
 				+ "\n" + "    NAME-app://host..."
 				+ "\n" + "e.g. -->  notepad-app://notepad/note.txt"
-				+ "\n" + "The rest of the link will be processed and handled per activity.");
+				+ "\n" + "The rest of the link will be processed and handled in the specified activity.");
 		newLine();
 		System.out.println("Please enter the NAME of your app: ");
-		String NAME = scannerSTDIN.nextLine();
+		NAME = scannerSTDIN.nextLine();
 		
 		System.out.println("Would you like to use the NAME as the host? (y/n)");
-		String HOST = NAME;
+		HOST = NAME;
 		if (scannerSTDIN.nextLine().toLowerCase() == "n") {
 			System.out.println("Please enter the HOST of your app: ");
 			HOST = scannerSTDIN.nextLine();
 		}
 		
-		//FINAL CHECK HERE --> PRINT NAME AND HOST AND CONFIRM THAT THEY ARE CORRECT
+		System.out.println("Please enter the name of the ACTIVITY which"
+				+ " you would like to generate and support deep linking: ");
+		activityName = scannerSTDIN.nextLine();
+		
+		//FINAL CHECK
+		newLine();
+		System.out.println("Please confirm the following data");
+		System.out.println("    - NAME: " + this.NAME);
+		System.out.println("    - HOST: " + this.HOST);
+		System.out.println("    - ACTIVITY: " + this.activityName);
+		
+		newLine();
+		System.out.println("Is the above information correct? y/n");
+		if (scannerSTDIN.nextLine().equals("n")) {
+			buildFilter();
+			return;
+		}
 		
 		//build the comment to be inserted above data tag
 		dataTagComment = "<!-- Accepts URIs that begin with \"" 

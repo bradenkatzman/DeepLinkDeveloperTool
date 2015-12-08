@@ -12,13 +12,12 @@ public class ProcessUserData {
 	File manifest;
 	boolean manifestFound;
 	
-	Scanner scannerSTDIN;
+	private Scanner scannerSTDIN;
 	
-	public ProcessUserData() {
-		manifestInject = new ManifestInject();
+	public ProcessUserData(Scanner scannerSTDIN) {
+		this.scannerSTDIN = scannerSTDIN;
+		manifestInject = new ManifestInject(this.scannerSTDIN);
 		manifestFound = false;
-		
-		scannerSTDIN = new Scanner(System.in);
 	}
 	
 	public void processRootDirectory() throws FileNotFoundException, IOException {
