@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -146,8 +148,8 @@ public class ManifestInject {
 					fileAsArrayList.add(line);
 				}
 				
-				//add the final activity line
-				fileAsArrayList.add(line);
+//				//add the final activity line
+//				fileAsArrayList.add(line);
 				
 				if (activityFound) {
 					//add the browsable intent filter
@@ -174,22 +176,38 @@ public class ManifestInject {
 	
 	private void arrayListToFile() throws IOException {
 		System.out.println("building updated manifest ...............");
-		AndroidManifestUpdated = new File("AndroidManifest.xml");
+			
+		//get the path to the original AndroidManifest file
+		Path path = Paths.get(AndroidManifest.toURI());
 		
-		FileWriter fw = new FileWriter(AndroidManifestUpdated);
-		for (String line : fileAsArrayList) {
-			System.out.println(line);
-			fw.write(line);
+		//extract the directory that contains the manifest file
+		String dirName = path.toString().substring(0, path.toString().lastIndexOf("/"));
+		File dir = new File(dirName);
+		
+		if (dir.exists()) {
+			//delete old manifest
+			AndroidManifest.delete();
+			
+			AndroidManifestUpdated = new File(dir, "AndroidManifest.xml");
+			
+			FileWriter fw = new FileWriter(AndroidManifestUpdated);
+			for (String line : fileAsArrayList) {
+				fw.write(line);
+				fw.write("\n");
+			}
+			
+			fw.flush();
+			fw.close();
+			
+			newLine();
+			System.out.println("Congratulations! The manifest now supports deep linking!");
+		} else {
+			System.out.println("There was a problem processing the directory which contained the manifest file.");
+			
+			scannerSTDIN.close();
+			
+			System.exit(0);
 		}
-		
-		fw.flush();
-		fw.close();
-		
-		replaceManifest();
-	}
-	
-	private void replaceManifest() {
-		
 	}
 	
 	/*
@@ -259,8 +277,6 @@ public class ManifestInject {
 				+ "\n" + dataTagComment
 				+ "\n" + dataTag
 				+ "\n" + browsableFilterClose;
-		
-		System.out.println(intentFilter);
 	}
 	
 	public void manifestNotFound() {

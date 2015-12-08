@@ -76,6 +76,10 @@ public class ProcessUserData {
 			manifestInject.manifestNotFound();
 		}
 	}
+	
+	public File getRootDirectory() {
+		return this.rootDirectory;
+	}
 
 	public final static String duckduckgoDir = "/Users/stormfootball4life/Desktop/CS/Columbia/SoftwareSystemsLab/android/";
 	public final static String BriskNoteDir = "/Users/stormfootball4life/AndroidStudioProjects/BriskNote/";
