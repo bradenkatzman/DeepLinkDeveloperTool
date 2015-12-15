@@ -1,5 +1,9 @@
 package components;
 
+
+//SEARCH FOR XML PARSER
+	//like dom --> insert nodes with filter
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -8,6 +12,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.*;
+import java.io.*;
 
 public class ManifestInject {
 	private String actionType;
@@ -32,7 +41,7 @@ public class ManifestInject {
 		this.scannerSTDIN = scannerSTDIN;
 	}
 	
-	public void processAndroidManifestXML(File AndroidManifest) throws FileNotFoundException, IOException {
+	public void processAndroidManifestXML(File AndroidManifest) throws FileNotFoundException, IOException, ParserConfigurationException, SAXException {
 		newLine();
 		System.out.println("processing AndroidManifest.xml ...................");
 		
@@ -43,10 +52,61 @@ public class ManifestInject {
 		scanManifest();
 		
 		//process the results of the scan
-		processScanResults();
+		//processScanResults();
 	}
 	
-	private void scanManifest() throws FileNotFoundException {
+	private void scanManifest() throws ParserConfigurationException, SAXException, IOException {
+		
+		buildFilter();
+		
+		//create a DocumebtBuilder
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document doc = db.parse(this.AndroidManifest);
+		
+		//Extract the root element of the manifest file
+		Element root = doc.getDocumentElement();
+		
+		NodeList activityList = doc.getElementsByTagName("activity");
+		
+		//search for the specified activity
+		for (int i = 0; i < activityList.getLength(); i++) {
+			Node currNode = activityList.item(i);
+			
+			//check if specified activity
+			Element element = (Element) currNode;
+			String activityNameNode = element.getAttribute("android:name");
+			if (activityNameNode.substring(activityNameNode.indexOf(".")+1).toLowerCase().equals(activityName.toLowerCase())) {
+				
+				//search for intent filters
+				NodeList children = currNode.getChildNodes();
+				for (int j = 0; j < children.getLength(); j++) {
+					Node currChildNode = children.item(j);
+
+					if (currChildNode.getNodeName().equals("intent-filter")) {
+						//check for browsable
+						Element intentFilter = (Element) currChildNode;
+						
+						NodeList categories = intentFilter.getElementsByTagName("category");
+						
+						//search for browsable category
+						for (int k = 0; k < categories.getLength(); k++) {
+							Node currCategoryNode = categories.item(k);
+							
+							Element categoryElement = (Element) currCategoryNode;
+							
+							//need to figure out how to extract the text content of this element
+							if (categoryElement.getTextContent().contains("BROWSABLE")) {
+								System.out.println("FOUND THE BROWSABLE FILTER");
+							}
+						}
+						
+					}
+				}
+			}
+			
+		}
+		
 		
 		//scan the file
 		Scanner manifestScan = new Scanner(AndroidManifest);

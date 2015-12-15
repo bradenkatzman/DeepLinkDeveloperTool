@@ -2,6 +2,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
+
 import components.*;
 
 
@@ -14,7 +18,8 @@ public class DeepLinkDriver {
 		processUserData = new ProcessUserData(this.scannerSTDIN);
 	}
 	
-	public void launch() throws FileNotFoundException, IOException {
+	public void launch() throws FileNotFoundException, IOException, 
+								ParserConfigurationException, SAXException {
 		System.out.println("------------------------------------------------------------------------------------");
 		System.out.println("Welcome to DeepLink - a developer tool for Android");
 		newLine();
@@ -34,7 +39,8 @@ public class DeepLinkDriver {
 		getUserData();
 	}
 	
-	private void getUserData() throws FileNotFoundException, IOException {
+	private void getUserData() throws FileNotFoundException,
+								IOException, ParserConfigurationException, SAXException {
 		processUserData.processRootDirectory();
 	}
 	

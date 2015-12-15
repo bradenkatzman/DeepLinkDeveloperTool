@@ -5,6 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
+
 public class ProcessUserData {
 	ManifestInject manifestInject;
 	private String rootDirectoryPath;
@@ -20,7 +24,7 @@ public class ProcessUserData {
 		manifestFound = false;
 	}
 	
-	public void processRootDirectory() throws FileNotFoundException, IOException {
+	public void processRootDirectory() throws FileNotFoundException, IOException, ParserConfigurationException, SAXException {
 		scanPath();
 		checkRoot();
 		processScanResults();
@@ -46,9 +50,9 @@ public class ProcessUserData {
 				scanner.close();
 				System.exit(0);
 			}			
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			//e.printStackTrace();
-			System.out.println("The file was not found");
+			System.out.println("The program experienced an error and exited.");
 			System.exit(0);
 		}
 	}
@@ -69,7 +73,7 @@ public class ProcessUserData {
 		}
 	}
 	
-	public void processScanResults() throws FileNotFoundException, IOException {
+	public void processScanResults() throws FileNotFoundException, IOException, ParserConfigurationException, SAXException {
 		if (manifestFound) {
 			manifestInject.processAndroidManifestXML(manifest);
 		} else {
